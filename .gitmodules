@@ -1,0 +1,6 @@
+[submodule "rl_envs"]
+	path = rl_envs
+	url = https://github.com/nuomizai/rl_envs.git
+[submodule "lerobot"]
+	path = lerobot
+	url = https://github.com/nuomizai/lerobot.git

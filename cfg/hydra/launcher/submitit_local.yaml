@@ -1,0 +1,9 @@
+defaults:
+  - _self_
+  - /hydra/launcher/basic
+
+hydra:
+  launcher:
+    type: submitit_local
+    max_num_procs: 1
+    timeout_min: 60

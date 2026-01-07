@@ -1,0 +1,37 @@
+task_name: close_trashbin
+
+
+abs_pose_limit_high: [0.68279, 0.10441, 0.48016, 0, 0, 0]
+abs_pose_limit_low: [ 0.47355, -0.12654,  0.28868, 0, 0, 0]
+
+reset_joint: [-0.24350193, -0.04202772,  0.20417419, -1.9711767,   0.02343661,  1.8993199, -0.22533026]
+
+
+"dataset": {
+    "repo_id": silri,
+    "use_imagenet_stats": false,
+    "root": "../../../offline_dataset/close_trashbin_franka_1028"
+}
+
+
+gripper_penalty: -0.2
+classifier_cfg:
+    classifier_keys: ["right"]
+    pretrained_encoder_path: ../resnet10_params.pkl
+    checkpoint_path: classifier/checkpoints/000500
+    dataset_path: offline_dataset/close_trashbin_franka_1028
+    reward_pos: 10.0
+    reward_neg: -0.05
+    require_train: true 
+    task_name: ${task_name}
+    algorithm: hil-serl
+    target_hz: 10
+    batch_size: 128
+    enable_stacking: false
+    load_classifier: ${load_classifier}
+
+close_gripper: true
+fix_gripper: true
+max_episode_length: 90
+max_train_time: 2400
+

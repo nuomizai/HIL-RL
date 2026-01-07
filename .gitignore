@@ -1,0 +1,14 @@
+.history
+.history/
+__pycache__
+__pycache__/
+*/__pycache__
+*/__pycache__/
+experiments/
+experiments
+outputs/
+outputs
+save_frames/
+save_frames
+scripts/
+scripts

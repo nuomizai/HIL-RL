@@ -1,0 +1,127 @@
+{
+    "dataset": {    
+        "repo_id": "silri",
+        "task": null,
+        "root": null,
+        "num_episodes_to_record": 20,
+        "replay_episode": 0,
+        "push_to_hub": false
+    },
+    "mode": "record",
+    "device": "cuda",
+
+    "env": {
+        "robot": {
+            "type": "so100_follower_end_effector",
+            "port": "/dev/ttyACM0",
+            "urdf_path": "path/to/your/robot.urdf",
+            "target_frame_name": "gripper_frame_link",
+            "cameras": {
+                "right": {
+                    "type": "opencv",
+                    "index_or_path": 2,
+                    "height": 480,
+                    "width": 640,
+                    "fps": 30
+                },
+                "wrist": {
+                    "type": "opencv",
+                    "index_or_path": 8,
+                    "height": 480,
+                    "width": 640,
+                    "fps": 30
+                }
+            },
+            "end_effector_bounds": {
+                "min": [
+                    -1.0,
+                    -1.0,
+                    -1.0
+                ],
+                "max": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "max_gripper_pos": 30
+        },
+        "teleop": {
+            "type": "gamepad",
+            "use_gripper": true
+        },
+        "wrapper": {
+            "display_cameras": false,
+            "add_joint_velocity_to_observation": true,
+            "add_current_to_observation": true,
+            "add_ee_pose_to_observation": true,
+            "crop_params_dict": {},
+            "resize_size": [
+                128,
+                128
+            ],
+            "control_time_s": 20.0,
+            "use_gripper": true,
+            "gripper_quantization_threshold": null,
+            "gripper_penalty": -0.02,
+            "gripper_penalty_in_reward": false,
+            "fixed_reset_joint_positions": [
+                0.0,
+                -20.0,
+                20.0,
+                90.0,
+                0.0,
+                30.0
+            ],
+            "reset_time_s": 2.5,
+            "control_mode": "gamepad"
+        },
+        "name": "real_robot",
+        "mode": null,
+        "repo_id": null,
+        "dataset_root": null,
+        "task": "",
+        "num_episodes": 0,
+        "episode": 0,
+        "pretrained_policy_name_or_path": null,
+        "device": "cuda",
+        "push_to_hub": true,
+        "fps": 10,
+        "features": {
+            "observation.images.right": {
+                "type": "VISUAL",
+                "shape": [
+                    128,
+                    128,
+                    3
+                ]
+            },
+            "observation.images.wrist": {
+                "type": "VISUAL",
+                "shape": [
+                    128,
+                    128,
+                    3
+                ]
+            },
+            "observation.state": {
+                "type": "STATE",
+                "shape": [
+                    14
+                ]
+            },
+            "action": {
+                "type": "ACTION",
+                "shape": [
+                    6
+                ]
+            }
+        },
+        "features_map": {
+            "observation.images.right": "observation.images.right",
+            "observation.images.wrist": "observation.images.wrist",
+            "observation.state": "observation.state",
+            "action": "action"
+        }
+    }
+}

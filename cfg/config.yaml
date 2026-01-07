@@ -1,0 +1,26 @@
+defaults:
+  - _self_
+  - robot_type@_global_: franka
+  - task@_global_: close_trashbin_franka_1028
+  - override hydra/launcher: submitit_local
+
+
+
+fake_env: false
+control_mode: pose
+lerobot_config_path: None
+freeze_actor: false
+use_human_intervention: false
+policy_type: silri
+ego_mode: false
+use_force: false
+load_classifier: true
+
+
+
+hydra:
+  run:
+    dir: ./exp_local/${now:%Y.%m.%d}/${hydra.job.override_dirname}
+  sweep:
+    dir: ./exp_local
+    subdir: ${now:%Y.%m.%d}/${hydra.job.override_dirname}
