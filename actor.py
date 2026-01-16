@@ -168,12 +168,6 @@ def actor_cli(env_cfg):
     cfg.job_name = env_cfg.task_name
 
     
-    if env_cfg.robot_config.robot_type == "sim":
-        cfg.env.features["observation.state"].shape = [18]
-        cfg.policy.input_features["observation.state"].shape = [18]
-    else:
-        cfg.env.features["observation.state"].shape = [14] if env_cfg.use_force else [8]
-        cfg.policy.input_features["observation.state"].shape = [14] if env_cfg.use_force else [8]
     log_dir = os.path.join(cfg.output_dir, "logs")
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f"actor_{cfg.job_name}.log")

@@ -151,13 +151,6 @@ def train_cli(env_cfg):
             exit(-1)
 
 
-    if env_cfg.robot_config.robot_type == "sim":
-        cfg.env.features["observation.state"].shape = [18]
-        cfg.policy.input_features["observation.state"].shape = [18]
-    else:
-        cfg.env.features["observation.state"].shape = [14] if env_cfg.use_force else [8]
-        cfg.policy.input_features["observation.state"].shape = [14] if env_cfg.use_force else [8]
-
     cfg.output_dir = os.getcwd()
     cfg.job_name = env_cfg.task_name
     cfg.validate(config_path)
