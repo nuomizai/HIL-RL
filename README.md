@@ -59,6 +59,7 @@ SiLRI: A state-wise Lagrangian RL algorithm for real-world robotic manipulation 
 
 This repository is built upon a fork of [Lerobot](https://github.com/huggingface/lerobot) and [HIL-SERL](https://github.com/rail-berkeley/hil-serl). Unlike the original `hil-serl` and `ConRFT` JAX implementation, we reimplement all algorithms in PyTorch for improved usability and better compatibility with the robotics community.
 
+For common questions, please refer to `docs/` for details.
 
 ## 🚀 Installation
 
