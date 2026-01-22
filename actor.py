@@ -137,8 +137,6 @@ def actor_cli(env_cfg):
         lerobot_config_path = "../../train_config_silri_ur.json"
     elif "franka" in env_cfg.robot_config.robot_type:
         lerobot_config_path = "../../train_config_silri_franka.json"
-    elif env_cfg.robot_config.robot_type == "sim":
-        lerobot_config_path = "../../train_config_silri_sim.json"
     else:
         raise ValueError(f"Invalid robot type: {env_cfg.robot_type}")
     with draccus.config_type("json"):
@@ -353,27 +351,21 @@ def act_with_policy(
             return
 
         with policy_timer:
-            if env_cfg.robot_config.robot_type == "sim":
-                action = np.zeros(4)
+            if env_cfg.fix_gripper:
+                action = np.zeros(policy.continuous_action_dim)
             else:
-                action = np.zeros(7)
+                action = np.zeros(policy.continuous_action_dim+1)
 
             # Policy output action
             policy_obs = make_policy_obs(obs, device, env_cfg.robot_config.robot_type)
             policy_action, action_info = policy.select_action(batch=policy_obs)
-            if env_cfg.robot_config.robot_type == "sim":
-                policy_action[-1] = policy_action[-1] * 2.0
 
             policy_action = policy_action.squeeze(0).cpu().detach().numpy()
             action[0:policy_action.shape[0]] = policy_action
 
 
             if env_cfg.freeze_actor:
-                if env_cfg.robot_config.robot_type == "sim":
-                    action = np.array([0.0, 0.0, 0.0, 0.0])
-                else:
-                    action = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-
+                action = 0 * action
                     
             # Calculate the FPS of the last policy inference
             policy_fps = policy_timer.fps_last  
@@ -392,14 +384,8 @@ def act_with_policy(
         
         # NOTE: We override the action if the intervention is True, because the applied action is the intervention action
         if "is_intervention" in info and info["is_intervention"]:
-            # NOTE: The action space for demonstration before hand is with the full action space
-            # but sometimes for example we want to deactivate the gripper
 
-            # print("is_intervention?", info["is_intervention"], info["intervene_action"])
-            if env_cfg.robot_config.robot_type == "sim":
-                action = info["teleop_action"]
-            else:
-                action = info["intervene_action"] 
+            action = info["intervene_action"] 
 
             episode_intervention = True           
             # Increment intervention steps counter

@@ -710,8 +710,8 @@ def add_actor_information_and_train(
 
                 # Add actor info to training info
                 training_infos["loss_actor"] = loss_actor.item()
-                training_infos["bc_loss"] = actor_output["bc_loss"].item()
-                training_infos["min_q_preds"] = actor_output["min_q_preds"].item()
+                training_infos["bc_loss"] = actor_output.get("bc_loss", torch.tensor(0.0)).item()
+                training_infos["min_q_preds"] = actor_output.get("min_q_preds", torch.tensor(0.0)).item()
                 training_infos["actor_grad_norm"] = actor_grad_norm
                 training_infos["allow_d_actor"] = actor_output.get("allow_d", 0)
                 

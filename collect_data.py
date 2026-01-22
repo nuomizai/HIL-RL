@@ -434,7 +434,7 @@ def replay_trajectory(
 @hydra.main(config_path="./cfg", config_name="config", version_base=None) 
 def main(env_cfg):
     if "franka" in env_cfg.robot_config.robot_type:
-        lerobot_config_path = "../../collect_data_franka.json"
+        lerobot_config_path = "../../train_config_collect_data.json"
     else:
         raise ValueError(f"Invalid robot type: {env_cfg.robot_type}")
 
