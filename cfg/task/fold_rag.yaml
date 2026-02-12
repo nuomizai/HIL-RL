@@ -1,0 +1,35 @@
+task_name: fold_rag
+
+
+abs_pose_limit_low: [-0.54993, -0.62167, 0.29963, -3.13463, -0.61272, -1.73063] # target_pose - [0.14, 0.14, 0.01, 0.01, 0.1, 0.4]
+abs_pose_limit_high: [-0.37579, -0.42501, 0.4089, 3.14114, -0.32695, -0.78482] # target_pose + [0.14, 0.14, 0.10, 0.01, 0.1, 0.4]
+# step = 0
+
+reset_joint: [4.064019, -1.8681937, -1.4756237, -1.2299589, 2.094602, 3.48865]
+
+"dataset": {
+    "repo_id": "lerobot/RoboMIND",
+    "use_imagenet_stats": false,
+    # "root": "/home/ps/Dev/linda/HIL-RL/experiments/fold_rag/offline_dataset/fold_rag" 
+}
+
+classifier_cfg:
+    classifier_keys: ["right"]
+    pretrained_encoder_path: /home/ps/Dev/linda/HIL-RL/experiments/resnet10_params.pkl
+    checkpoint_path: /home/ps/Dev/linda/HIL-RL/experiments/fold_rag/classifier_ckpt_hilserl
+    reward_pos: 10.0
+    reward_neg: -0.05
+    require_train: true
+    task_name: fold_rag
+    algorithm: hil-serl
+    target_hz: 10
+    batch_size: 128
+    enable_stacking: false
+    load_classifier: ${load_classifier}
+
+max_train_time: 2400
+close_gripper: false
+fix_gripper: false
+max_episode_length: 100
+gripper_penalty: -0.2
+intervene_penalty: -0.2

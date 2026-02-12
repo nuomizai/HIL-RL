@@ -207,8 +207,9 @@ def step_env_and_process_transition(
         Processed transition with updated state.
     """
     device = torch.device("cpu")
-
-
+    action[2] = 1.0
+    print(f"action: {action}")
+    # input("press Enter to continue...")
     obs, reward, terminated, truncated, info = env.step(action)
     obs = make_policy_obs(obs, device, env_cfg.robot_config.robot_type)
 
@@ -296,6 +297,9 @@ def control_loop(
             image_writer_processes=0,
             features=features,
         )
+        print('cfg.dataset.root:', cfg.dataset.root)
+        print('dataset.root.absolute():', dataset.root.absolute())
+        input("press Enter to continue...")
         logging.info(f"Dataset will be saved to: {dataset.root.absolute()}")
         print('3')
 
@@ -368,7 +372,7 @@ def control_loop(
             terminate_count += 1 
         print('terminated:', terminated, '; terminate_count:', terminate_count)
         # Handle episode termination
-        if terminated and terminate_count >= 10:
+        if terminated:
             episode_time = time.perf_counter() - episode_start_time
             logging.info(
                 f"Episode ended after {episode_step} steps in {episode_time:.1f}s with reward {transition[TransitionKey.REWARD]}"
@@ -435,11 +439,13 @@ def replay_trajectory(
 def main(env_cfg):
     if "franka" in env_cfg.robot_config.robot_type:
         lerobot_config_path = "../../train_config_collect_data.json"
+    elif "ur" in env_cfg.robot_config.robot_type:
+        lerobot_config_path = "../../train_config_collect_data.json"
     else:
         raise ValueError(f"Invalid robot type: {env_cfg.robot_type}")
 
     with draccus.config_type("json"):
-        cfg = draccus.parse(GymManipulatorConfig, lerobot_config_path, args=[f"--dataset.task={env_cfg.task_name}", f"--dataset.root={env_cfg.task_name}"])
+        cfg = draccus.parse(GymManipulatorConfig, lerobot_config_path, args=[f"--dataset.task={env_cfg.task_name}"])
     
 
     """Main entry point for gym manipulator script."""

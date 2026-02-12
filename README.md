@@ -6,6 +6,11 @@
 
 # Real-world Reinforcement Learning from <br> Suboptimal Interventions 
 
+<p align="center">
+  <img src="statics/silri_overview.png" alt="SiLRI Overview" width="70%">
+</p>
+
+
 SiLRI: A state-wise Lagrangian RL algorithm for real-world robotic manipulation that enables efficient online learning from suboptimal interventions.
 
 > Yinuo Zhao<sup>1,2</sup>, Huiqian Jin<sup>1,3</sup>, Lechun Jiang<sup>1,3</sup>, Xinyi Zhang<sup>1,4</sup>, Kun Wu<sup>1</sup>, Pei Ren<sup>1</sup>, Zhiyuan Xu<sup>1,&dagger;</sup>, Zhengping Che<sup>1,&dagger;</sup>, Lei Sun<sup>3</sup>, Dapeng Wu<sup>2</sup>, Chi Harold Liu<sup>4</sup>, Jian Tang<sup>1,&#9993;</sup>
@@ -31,7 +36,7 @@ SiLRI: A state-wise Lagrangian RL algorithm for real-world robotic manipulation 
 
 ## TODO List
 
-* [ ] **Real World:** Release the `xrocs` and `xtele` packages for UR robots.
+* [✅] **Real World:** Release the `xrocs` and `xtele` packages for UR robots.
 * [ ] **Real World:** Release the Docker image and the `xrocs`/`xtele` packages for Franka.
 * [ ] **Simulator:** Release simulator examples for users without a teleoperation system.
 
@@ -45,6 +50,8 @@ SiLRI: A state-wise Lagrangian RL algorithm for real-world robotic manipulation 
 * `learner.py`: Learner script that receives transitions from the actor and sends updated model parameters back.
 * `train_config_silri_franka.json`: LeRobot model configuration file for training runs on the Franka robot.
 * `rl_envs/`: Robot environments and wrappers (Franka and UR supported).
+    * `xrocs/`: Interface package connecting actor with robot, camera, and gripper components.
+    * `xtele/`: Interface package connecting actor with teleoperation system.
 * `lerobot/`: Open-source RL baseline library. In addition to `HIL-SERL`, we added `SilRI` and `HG-Dagger`.
 
 **HIL-RL** (other components)
@@ -74,19 +81,24 @@ Create a virtual environment, then install the dependencies:
 conda create -n silri python=3.10
 conda activate silri
 
-cd lerobot
-pip install -e .
-cd ..
-
+cd lerobot && pip install -e . && cd ..
 pip install torch==2.1.1 torchvision==0.16.1 torchaudio==2.1.1 --index-url https://download.pytorch.org/whl/cu121
 
 pip install -r requirements.txt
+
+# [optional]
+cd rl_envs/xrocs && pip install -e . && cd ../../
+cd rl_envs/xtele && pip install -e . 
+cd xtele/scripts && bash install_all.sh && cd ../../../../
 ```
 Some users may need to run the following command:
 ```
 pip uninstall torchcodec
 
 ```
+
+To validate if `xrocs` and `xtele` are correctly installed, please refer to [rl_envs/README.md](https://github.com/nuomizai/rl_envs) for more details.
+
 ## 📖 Training Recipe
 
 The overall training pipeline follows [HIL-SERL](https://github.com/rail-berkeley/hil-serl). Specifically, real-world RL training consists of three stages:

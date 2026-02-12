@@ -2,7 +2,7 @@
     "dataset": {    
         "repo_id": "silri",
         "task": null,
-        "root": null,
+        "root": "offline_dataset",
         "num_episodes_to_record": 20,
         "replay_episode": 0,
         "push_to_hub": false
