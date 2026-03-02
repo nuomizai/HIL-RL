@@ -169,7 +169,11 @@ After configureing all these above parameters, first run the learner on learner 
 
 
 ## 📦 Resources
-Here we list the required resources and their purchase links for building a homogeneous UR arm.
+Here we list the required resources and their purchase links for building the following homogeneous UR arm.
+
+<p align="center">
+  <img src="statics/UR-arm.png" alt="homogeneous UR arm" width="70%">
+</p>
 
 | Item                               | Spec.                                                   | Quantity    | Acquisition Method                                                                                                                                                                                                                                                                                        |
 | ------------------------------------ | --------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
