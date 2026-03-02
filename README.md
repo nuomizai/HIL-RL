@@ -28,15 +28,17 @@ SiLRI: A state-wise Lagrangian RL algorithm for real-world robotic manipulation 
  [![Project Page](https://img.shields.io/badge/Project-Page-green.svg?logo=github&logoColor=white)](https://silri-rl.github.io/)
 
 
-[\[📖 Documents\]](#-documents) [\[🚀 Installation\]](#-installation) [\[📖 Training Recipe\]](#-training-recipe)  [\[🙋 FAQs\]](#-faqs)
+<!-- [\[📖 Documents\]](#-documents) [\[🚀 Installation\]](#-installation) [\[📖 Training Recipe\]](#-training-recipe)  [\[🙋 FAQs\]](#-faqs) -->
 
+[\[🚀 Installation\]](#-installation) [\[📖 Training Recipe\]](#-training-recipe)  [\[📦 Resources\]](#-resources)  [\[🙋 FAQs\]](#-faqs)
 
 
 </div>
 
 ## TODO List
 
-* [✅] **Real World:** Release the `xrocs` and `xtele` packages for UR robots.
+* [✅] **Real World:** Release the 3D model and corresponding shopping list for the homogeneous UR arm.
+* [✅] **Real World:** Release the 3D STL files for UR robots.
 * [ ] **Real World:** Release the Docker image and the `xrocs`/`xtele` packages for Franka.
 * [ ] **Simulator:** Release simulator examples for users without a teleoperation system.
 
@@ -166,7 +168,29 @@ policy.actor_learner_config.learner_host: the ip of learner server
 After configureing all these above parameters, first run the learner on learner server by running `bash learner.sh`, then, run the actor process on actor server by running `bash actor.sh`.
 
 
+## 📦 Resources
+Here we list the required resources and their purchase links for building a homogeneous UR arm.
 
+| Item                               | Spec.                                                   | Quantity    | Acquisition Method                                                                                                                                                                                                                                                                                        |
+| ------------------------------------ | --------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| High-Torque Servo                  | Dynamixel XL430-W250-T                                  | 3           | [shop-link](https://item.taobao.com/item.htm?id=588178867677&mi\_id=0000W4dQA6lUysc81YygntRUYzRUyrksuq3sH2XqEN5bjdA&spm=a21xtw.29178619.0.0&xxc=shop)                                                                                                                                                                  |
+| Low-Torque Servo                   | Dynamixel XL330-M288-T                                  | 4           | [shop-link](https://item.taobao.com/item.htm?id=638117456346&mi\_id=0000Km7LN-eylH961vwB4ONT1-e3QjsHiDTfXkJmjuGMjfk&spm=a21xtw.29978516.0.0&xxc=shop)                                                                                                                                                                  |
+| Low-Torque Servo                   | Dynamixel XL330-M077-T                                  | 1           | [shop-link](https://item.taobao.com/item.htm?id=638814318650&mi\_id=00005\_M-EgJ7G3Z086EOSlY4l75MMSXDfTsP\_GXgeqOYvv8&spm=a21xtw.29978516.0.0&xxc=shop)                                                                                                                                                                |
+| base-1                             | ABS                                                     | 1           | [base-1.SLT](https://drive.google.com/file/d/1PIfdqjkkhDV1_-lPo3KQ3-JkvKTCe_-_/view?usp=drive_link)                                                                                                                                                                                                                                                                            |
+| base-2                             | ABS                                                     | 1           | [base-2.STL](https://drive.google.com/file/d/1_wdr0Eu8ZCzebFqMAY1TgQNBdMAd16QK/view?usp=drive_link)                                                                                                                                                                                                                                                                            |
+| L1                                 | ABS                                                     | 1           | [L1.STL](https://drive.google.com/file/d/1p8khpBvZdinE7lHrT4K6ww9iGjbYqoJM/view?usp=drive_link)                                                                                                                                                                                                                                                                            |
+| L2                                 | ABS                                                     | 1           | [L2.STL](https://drive.google.com/file/d/1H-hZz0nnlOKcbmI6skdGB7BJIkg90KS2/view?usp=drive_link)                                                                                                                                                                                                                                                                            |
+| L3                                 | ABS                                                     | 1           | [L3.STL](https://drive.google.com/file/d/14cqPtbG57uQRZ7UITr4zF8-TBKPyVNrL/view?usp=drive_link)                                                                                                                                                                                                                                                                            |
+| L4                                 | ABS                                                     | 1           | [L4.STL](https://drive.google.com/file/d/1B4AWqLHD5qCiUipDA9MiLriARvVy2xG6/view?usp=drive_link)                                                                                                                                                                                                                                                                            |
+| L5                                 | ABS                                                     | 1           | [L5.STL](https://drive.google.com/file/d/12AqxHv1EHWU9DqBVqSy_EXgPe4tjl8If/view?usp=drive_link)                                                                                                                                                                                                                                                                            |
+| handle-1                           | ABS                                                     | 1           | [handle-1.STL](https://drive.google.com/file/d/1JSLaAqGAOf870neMlcRPvyu7ZmwSk7zW/view?usp=drive_link)                                                                                                                                                                                                                                                                            |
+| handle-2                           | ABS                                                     | 1           | [handle-2.STL](https://drive.google.com/file/d/1iBcsDosUp20565ItNQLneZiw5ldw7owm/view?usp=drive_link)                                                                                                                                                                                                                                                                            |
+| Hook and Loop Ties                 | -                                                       | 1           | [shop-link](https://item.jd.com/100188196436.html)                                                                                                                                                                                                                                                                     |
+| G-Clamp                            | -                                                       | 1           | [shop-link](https://item.jd.com/100121851816.html)                                                                                                                                                                                                                                                                    |
+| Servo Driver Board                 | -                                                       | 1           | [shop-link](https://item.taobao.com/item.htm?abbucket=11&id=738955630278&mi\_id=00007TRYnTZBR5nCe5WFMdNRU-Jsq2oo0fEDgdPz9vwTuwA&ns=1&priceTId=2147818117720205094592854e1a6f&skuId=5096459344123&spm=a21n57.1.hoverItem.2&utparam=%7B%22aplus\_abtest%22%3A%22f566cc0383e8c2646ccb8c706fe70c84%22%7D&xxc=taobaoSearch) |
+| 304 Stainless Steel Torsion Spring | 0.9mm Wire Dia x 8mm OD x 5 Coils x 180° x Left-Handed | 1           | Customized|
+| Screws                             | -                                                       | As Required | -                                                                                                                                                                                                                                                                                                         |
+| Buck Converter                     | LM2596S                                                 | 1           | [shop-link](https://detail.tmall.com/item.htm?abbucket=19&id=617133394293&rn=58c6cfb58279aea4f3b9092d89459ffa&skuId=4524371507783&spm=a1z10.3-b-s.w4011-23941273512.106.64ba6dcbW95LpN)                                                                                                                                |
 
 
 ## License
@@ -187,7 +211,8 @@ If you find this project useful in your research, please consider cite:
 ```
 
 ## 🙋 FAQs
-If you run into any issues, please open a GitHub issue or contact `linda.chao.007@gmail.com`. We welcome feedback and contributions!
+We summarize common questions in the `docs/` directory. If you encounter an issue not covered there, please open a GitHub issue or contact `linda.chao.007@gmail.com` directly. We welcome feedback and contributions.
+
 
 ## Acknowledgement
 HIL-RL is built with reference to the code of the following projects: [Lerobot](https://github.com/huggingface/lerobot), [HIL-SERL](https://github.com/rail-berkeley/hil-serl). Thanks for their awesome work!
