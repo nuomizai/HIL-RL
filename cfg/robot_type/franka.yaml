@@ -3,6 +3,9 @@ robot_config:
   hz: 10
   joint_dim: 7
   gripper_dim: 1
+  dual_arm: false
+  step_update_currpos: true
+  
   image_crop: {
       "right": [[0, 480], [225, -50]]
   }

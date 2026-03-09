@@ -1,4 +1,4 @@
-# !/usr/bin/env python
+  # !/usr/bin/env python
 
 # Copyright 2025 The HuggingFace Inc. team. All rights reserved.
 #
@@ -297,11 +297,9 @@ def control_loop(
             image_writer_processes=0,
             features=features,
         )
-        print('cfg.dataset.root:', cfg.dataset.root)
-        print('dataset.root.absolute():', dataset.root.absolute())
+
         input("press Enter to continue...")
         logging.info(f"Dataset will be saved to: {dataset.root.absolute()}")
-        print('3')
 
     episode_idx = 0
     episode_step = 0
@@ -332,7 +330,6 @@ def control_loop(
         truncated = transition.get(TransitionKey.TRUNCATED, False)
 
         if cfg.mode == "record":
-            # observations = transition[TransitionKey.OBSERVATION]
             observations = {
                 k: v.squeeze(0).cpu()
                 for k, v in transition[TransitionKey.OBSERVATION].items()
@@ -370,9 +367,8 @@ def control_loop(
         terminated = terminated or shared_state.terminate or truncated
         if terminated :
             terminate_count += 1 
-        print('terminated:', terminated, '; terminate_count:', terminate_count)
         # Handle episode termination
-        if terminated:
+        if terminated and terminate_count >= 10:
             episode_time = time.perf_counter() - episode_start_time
             logging.info(
                 f"Episode ended after {episode_step} steps in {episode_time:.1f}s with reward {transition[TransitionKey.REWARD]}"
@@ -431,6 +427,7 @@ def replay_trajectory(
         )
         # transition = action_processor(transition)
         action = transition[TransitionKey.ACTION]
+        obs = transition[TransitionKey.OBSERVATION]
         env.step(transition[TransitionKey.ACTION])
 
 
@@ -441,6 +438,8 @@ def main(env_cfg):
         lerobot_config_path = "../../train_config_collect_data.json"
     elif "ur" in env_cfg.robot_config.robot_type:
         lerobot_config_path = "../../train_config_collect_data.json"
+    elif "tienkung" in env_cfg.robot_config.robot_type:
+        lerobot_config_path = "../../train_config_collect_data_tienkung.json" 
     else:
         raise ValueError(f"Invalid robot type: {env_cfg.robot_type}")
 
@@ -455,6 +454,7 @@ def main(env_cfg):
         traceback.print_exc()          # full stacktrace
         sys.exit(1)
     print('success make env')
+
     if cfg.mode == "replay":
         replay_trajectory(env, cfg)
         exit(0)

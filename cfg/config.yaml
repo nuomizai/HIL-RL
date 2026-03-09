@@ -4,8 +4,6 @@ defaults:
   - task@_global_: close_trashbin_franka_1028
   - override hydra/launcher: submitit_local
 
-
-
 fake_env: false
 control_mode: pose
 lerobot_config_path: None
@@ -15,7 +13,6 @@ policy_type: silri
 ego_mode: false
 use_force: false
 load_classifier: true
-
 
 
 hydra:

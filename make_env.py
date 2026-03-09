@@ -28,7 +28,7 @@ def make_env(config, fake_env, use_human_intervention, classifier=False, use_gri
         else:
             from rl_envs.base_env import BaseEnv
             from rl_envs.wrappers import HumanIntervention, SERLObsWrapper, AugmentedObservationWrapper
-            from rl_envs.reward_wrapper import MultiCameraBinaryRewardClassifierWrapper, GripperPenaltyWrapper
+            from rl_envs.reward_wrapper import MultiCameraBinaryRewardClassifierWrapper, GripperPenaltyWrapper, EmergencyTerminateWrapper
 
             env = BaseEnv(config=config.robot_config, fake_env=fake_env)
             
@@ -41,6 +41,9 @@ def make_env(config, fake_env, use_human_intervention, classifier=False, use_gri
                 env = MultiCameraBinaryRewardClassifierWrapper(env, config.robot_config.classifier_cfg, cfg=cfg)
                 if use_gripper_penalty:
                     env = GripperPenaltyWrapper(env, penalty=config.robot_config.gripper_penalty)
+
+                env = EmergencyTerminateWrapper(env)
+
     except Exception as e:
         print_green(f"[{type(e).__name__}] {e!r}")
         traceback.print_exc()          # full stacktrace
