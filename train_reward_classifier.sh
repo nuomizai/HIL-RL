@@ -14,13 +14,13 @@ cd experiments/${task_name}
 
 # franka/ur singlearm task
 python3 ../../train_reward_classifier.py \
-    --config_path ../../train_config_reward_classifier.json \
+    --config_path ../../cfg/train_config_reward_classifier.json \
     --dataset.root="../../experiments/${task_name}/offline_dataset/${task_name}" \
     "$@"  
 
 
 # # tienkung dualarms task
 # python3 ../../train_reward_classifier.py \
-#     --config_path ../../train_config_reward_classifier_tienkung.json \
+#     --config_path ../../cfg/train_config_reward_classifier_tienkung.json \
 #     --dataset.root="../../experiments/${task_name}/offline_dataset/${task_name}" \
 #     "$@"  

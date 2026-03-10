@@ -105,8 +105,7 @@ from hydra.core.hydra_config import HydraConfig
 import cv2
 
 
-def print_green(x: any) -> None:
-    return print("\033[92m {}\033[00m".format(x))
+
 #################################################
 # Main entry point #
 #################################################
@@ -118,14 +117,9 @@ def on_press(key):
             print("----------------set human intervention key to {}!----------------".format(shared_state.human_intervention_key))
             shared_state.human_intervention_key = not shared_state.human_intervention_key
             time.sleep(0.5)
-        # if str(key) == 'Key.space' or str(key) == 'Key.pause':
-        if str(key) == 'Key.pause':
+        if str(key) == 'Key.space' or str(key) == 'Key.pause':
             print("----------------set terminate to true!----------------")
             shared_state.terminate = True
-            time.sleep(0.5)
-        if str(key) == 'Key.space':
-            print("----------------set terminate to false!----------------")
-            shared_state.emergency_terminate = True
             time.sleep(0.5)
     except AttributeError:
         pass
@@ -141,12 +135,12 @@ from lerobot.configs.default import DatasetConfig
 @hydra.main(config_path="./cfg", config_name="config", version_base=None) 
 def actor_cli(env_cfg):
     if "ur" in env_cfg.robot_config.robot_type:
-        lerobot_config_path = "../../train_config_silri_ur.json"
+        lerobot_config_path = "../../cfg/train_config_silri_ur.json"
     elif "franka" in env_cfg.robot_config.robot_type:
-        lerobot_config_path = "../../train_config_silri_franka.json"
+        lerobot_config_path = "../../cfg/train_config_silri_franka.json"
     
     elif "tienkung" in env_cfg.robot_config.robot_type:
-        lerobot_config_path = "../../train_config_silri_tienkung.json"
+        lerobot_config_path = "../../cfg/train_config_silri_tienkung.json"
     else:
         raise ValueError(f"Invalid robot type: {env_cfg.robot_type}")
     with draccus.config_type("json"):
@@ -154,11 +148,6 @@ def actor_cli(env_cfg):
             cfg = draccus.parse(TrainRLServerPipelineConfig, lerobot_config_path, args=[f"--policy.type={env_cfg.policy_type}", f"--policy.num_discrete_actions=2"])
         else:
             cfg = draccus.parse(TrainRLServerPipelineConfig, lerobot_config_path, args=[f"--policy.type={env_cfg.policy_type}"])
-    
-    if env_cfg.resume_model:
-        cfg.resume = True
-    else:
-        cfg.resume = False
 
     if env_cfg.dataset is not None:
         dataset_obj = OmegaConf.to_object(env_cfg.dataset)
@@ -381,8 +370,8 @@ def act_with_policy(
             policy_action = policy_action.squeeze(0).cpu().detach().numpy()
 
 
-            if policy_action.shape[0] < action.shape[0]: # no gripper
-                if action.shape[0] - policy_action.shape[0] == 1:
+            if env_cfg.fix_gripper: # no gripper
+                if not env_cfg.robot_config.dual_arm:
                     # single_arm
                     action[0:policy_action.shape[0]] = policy_action
                 else:
@@ -458,7 +447,7 @@ def act_with_policy(
             # 将当前episode收集的过渡数据推送到transitions_queu
             if len(list_transition_to_send_to_learner) > 0:
 
-                push_transitions_to_transport_queue( 
+                push_transitions_to_transport_queue(
                     transitions=list_transition_to_send_to_learner,
                     transitions_queue=transitions_queue,
                 )

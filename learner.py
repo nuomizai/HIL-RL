@@ -111,10 +111,6 @@ expert_training_step = 0
 
 new_offline_transition_num = 0
 
-def print_green(x: any) -> None:
-    return print("\033[92m {}\033[00m".format(x))
-
-
 #################################################
 # MAIN ENTRY POINTS AND CORE ALGORITHM FUNCTIONS #
 #################################################
@@ -124,12 +120,12 @@ def print_green(x: any) -> None:
 @hydra.main(config_path="./cfg", config_name="config") 
 def train_cli(env_cfg):
     if env_cfg.robot_config.robot_type == "ur_wrist":
-        env_cfg.lerobot_config_path = "../../../../../train_config_silri_ur.json"
+        env_cfg.lerobot_config_path = "../../../../../cfg/train_config_silri_ur.json"
     elif "franka" in env_cfg.robot_config.robot_type:
-        env_cfg.lerobot_config_path = "../../../../../train_config_silri_franka.json"
+        env_cfg.lerobot_config_path = "../../../../../cfg/train_config_silri_franka.json"
     
     elif "tienkung" in env_cfg.robot_config.robot_type:
-        env_cfg.lerobot_config_path = "../../../../../train_config_silri_tienkung.json"
+        env_cfg.lerobot_config_path = "../../../../../cfg/train_config_silri_tienkung.json"
     else:
         raise ValueError(f"Invalid robot type: {env_cfg.robot_type}")
     
@@ -552,7 +548,6 @@ def add_actor_information_and_train(
 
             # weight = batch["complementary_info"]["weight"]
 
-            # assert 'discrete_penalty' in batch["complementary_info"].keys(), "discrete_penalty not in batch['complementary_info']"
 
             check_nan_in_transition(observations=observations, actions=actions, next_state=next_observations)
 
@@ -702,8 +697,8 @@ def add_actor_information_and_train(
             # Add discrete critic info to training info
             training_infos["loss_discrete_critic"] = loss_discrete_critic.item()
             training_infos["discrete_critic_grad_norm"] = discrete_critic_grad_norm
-            training_infos["loss_q"] = discrete_critic_output.get("loss_q", torch.tensor(0.0)).item()
-            training_infos["loss_bc"] = discrete_critic_output.get("loss_bc", torch.tensor(0.0)).item()
+            training_infos["loss_q"] = discrete_critic_output.get("loss_q", 0.0)
+            training_infos["loss_bc"] = discrete_critic_output.get("loss_bc", 0.0)
 
 
 
@@ -722,10 +717,10 @@ def add_actor_information_and_train(
 
                 # Add actor info to training info
                 training_infos["loss_actor"] = loss_actor.item()
-                training_infos["bc_loss"] = actor_output.get("bc_loss", torch.tensor(0.0)).item()
-                training_infos["min_q_preds"] = actor_output.get("min_q_preds", torch.tensor(0.0)).item()
+                training_infos["bc_loss"] = actor_output.get("bc_loss", 0.0)
+                training_infos["min_q_preds"] = actor_output.get("min_q_preds", 0.0)
                 training_infos["actor_grad_norm"] = actor_grad_norm
-                training_infos["allow_d_actor"] = actor_output.get("allow_d", 0)
+                training_infos["allow_d_actor"] = actor_output.get("allow_d", 0.0)
                 
 
                 if "silri" in cfg.policy.type:
@@ -744,9 +739,9 @@ def add_actor_information_and_train(
                     optimizers["lagrange"].step()
                     training_infos["loss_lagrange"] = loss_lagrange.item()
                     training_infos["lagrange_grad_norm"] = lagrange_grad_norm
-                    training_infos["mean_d"] = lagrange_output.get("mean_d", torch.tensor(0.0)).item()
-                    training_infos["allow_d"] = lagrange_output.get("allow_d", torch.tensor(0.0)).item()
-                    training_infos["cost_dev"] = lagrange_output.get("cost_dev", torch.tensor(0.0)).item()
+                    training_infos["mean_d"] = lagrange_output.get("mean_d", 0.0)
+                    training_infos["allow_d"] = lagrange_output.get("allow_d", 0.0)
+                    training_infos["cost_dev"] = lagrange_output.get("cost_dev", 0.0)
             
                 policy.update_target_networks()
 
@@ -988,7 +983,7 @@ def offline_training(cfg: TrainRLServerPipelineConfig, policy: nn.Module, optimi
         training_infos = {}
         # Add actor info to training info
         training_infos["loss_expert"] = loss_expert.item()
-        training_infos["allow_d"] = expert_output.get("allow_d", 0)
+        training_infos["allow_d"] = expert_output.get("allow_d", 0.0)
         training_infos["loss_actor_bc"] = loss_actor_bc.item()
 
 
@@ -1051,7 +1046,7 @@ def expert_training(offline_replay_buffer, optimizers, policy, clip_grad_norm_va
         }
         expert_output= policy.forward(forward_batch, model="expert")
         loss_expert = expert_output["loss_expert"] 
-        allow_distance = expert_output.get("allow_d", 0)
+        allow_distance = expert_output.get("allow_d", 0.0)
         optimizers["expert"].zero_grad()
         loss_expert.backward()
         expert_grad_norm = torch.nn.utils.clip_grad_norm_(

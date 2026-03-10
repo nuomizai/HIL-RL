@@ -8,7 +8,7 @@ robot_config:
   joint_dim: 7
   gripper_dim: 1
   dual_arm: true
-  step_update_currpos: false
+  use_cmd_pose: false
 
   image_crop: {
       # "top": [[320,720],[0,1280]]
@@ -32,7 +32,7 @@ robot_config:
   reset_joint: ${reset_joint}
 
 
-  random_reset: false
+  random_reset: true
   random_xy_range: 0.02
   random_rz_range: 0.05
   gripper_sleep: 0.6
