@@ -355,13 +355,12 @@ def act_with_policy(
             return
 
         with policy_timer:
-            if env_cfg.fix_gripper:
-                action = np.zeros(policy.continuous_action_dim)
+            # 双臂（left_ee_pos+left_gripper + right_ee_pos+right_gripper）
+            if env_cfg.robot_config.dual_arm:
+                action = np.zeros(policy.continuous_action_dim+2)
+            # 单臂（ee_pos+gripper）
             else:
-                if env_cfg.robot_config.dual_arm:
-                    action = np.zeros(policy.continuous_action_dim+2)
-                else:
-                    action = np.zeros(policy.continuous_action_dim+1)
+                action = np.zeros(policy.continuous_action_dim+1)
 
             # Policy output action
             policy_obs = make_policy_obs(obs, device, env_cfg.robot_config.robot_type)
@@ -370,15 +369,16 @@ def act_with_policy(
             policy_action = policy_action.squeeze(0).cpu().detach().numpy()
 
 
-            if env_cfg.fix_gripper: # no gripper
-                if not env_cfg.robot_config.dual_arm:
-                    # single_arm
-                    action[0:policy_action.shape[0]] = policy_action
-                else:
-                    # dual_arm
+            if env_cfg.fix_gripper: 
+                if env_cfg.robot_config.dual_arm:
+                    # 双臂无夹爪时，分别赋值left_ee_pos和right_ee_pos
                     action[0:policy.continuous_action_dim//2] = policy_action[0:policy.continuous_action_dim//2]
-                    action[policy.continuous_action_dim//2+1:-1] = policy_action[policy.continuous_action_dim//2:]
+                    action[policy.continuous_action_dim//2+1:-1] = policy_action[policy.continuous_action_dim//2:] 
+                else:
+                    # 单臂无夹爪时，只赋值ee_pos
+                    action[0:policy_action.shape[0]] = policy_action
             else:
+                # 有夹爪直接赋值
                 action = copy.deepcopy(policy_action)
 
             if env_cfg.freeze_actor:
