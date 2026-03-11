@@ -1,9 +1,6 @@
 robot_config:
   robot_type: tienkung
-  
-  robot_identify: robot
   gripper_identify: ["left", "right"]
-
   hz: 10
   joint_dim: 7
   gripper_dim: 1

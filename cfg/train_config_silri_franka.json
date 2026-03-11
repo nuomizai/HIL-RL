@@ -45,7 +45,7 @@
             "observation.state": {
                 "type": "STATE",
                 "shape": [
-                    14
+                    8
                 ]
             }
         },
@@ -126,7 +126,7 @@
             "init_final": 0.05
         },
         "actor_learner_config": {
-            "learner_host": "10.10.247.23",
+            "learner_host": "172.168.1.10",
             "learner_port": 50051,
             "policy_parameters_push_frequency": 4
         },
@@ -235,7 +235,7 @@
             "observation.state": {
                 "type": "STATE",
                 "shape": [
-                    14
+                    8
                 ]
             },
             "action": {
