@@ -189,6 +189,22 @@ If you find this project useful in your research, please consider cite:
 ## 🙋 FAQs
 If you run into any issues, please open a GitHub issue or contact `linda.chao.007@gmail.com`. We welcome feedback and contributions!
 
+## Update Logs
+### v1.0
+#### Improvements
+- Adapt to the control logic of single-arm/dual-arm robots
+- Optimize code format and comments to improve maintainability
+
+#### Fixes
+- Fixed the dimension error of `observation.state` in JSON files
+- Implemented the resume function to support recovery after training interruption
+
+---
+
+### v0.0
+#### Core Features
+- Implemented the control framework for single-arm robots
+
 ## Acknowledgement
 HIL-RL is built with reference to the code of the following projects: [Lerobot](https://github.com/huggingface/lerobot), [HIL-SERL](https://github.com/rail-berkeley/hil-serl). Thanks for their awesome work!
 
