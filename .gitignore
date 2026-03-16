@@ -12,3 +12,6 @@ save_frames/
 save_frames
 scripts/
 scripts
+.DS_Store
+*/.DS_Store
+
