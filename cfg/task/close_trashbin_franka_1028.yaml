@@ -35,3 +35,5 @@ fix_gripper: true
 max_episode_length: 90
 max_train_time: 2400
 
+resume_model: false
+resume_path: None

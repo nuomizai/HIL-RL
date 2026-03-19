@@ -33,3 +33,6 @@ fix_gripper: false
 max_episode_length: 100
 gripper_penalty: -0.2
 intervene_penalty: -0.2
+
+resume_model: false
+resume_path: None

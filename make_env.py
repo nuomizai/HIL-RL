@@ -27,10 +27,12 @@ def make_env(config, fake_env, use_human_intervention, classifier=False, use_gri
             env = ConvertObservationWrapper(env)
         else:
             from rl_envs.base_env import BaseEnv
+            from rl_envs.tienkung_env import TienkungEnv
             from rl_envs.wrappers import HumanIntervention, SERLObsWrapper, AugmentedObservationWrapper
             from rl_envs.reward_wrapper import MultiCameraBinaryRewardClassifierWrapper, GripperPenaltyWrapper
 
-            env = BaseEnv(config=config.robot_config, fake_env=fake_env)
+            # env = BaseEnv(config=config.robot_config, fake_env=fake_env)
+            env = TienkungEnv(config=config.robot_config, fake_env=fake_env)
             
             if not fake_env and use_human_intervention:
                 env = HumanIntervention(env)

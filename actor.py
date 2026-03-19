@@ -58,6 +58,7 @@ import torch
 import yaml
 from torch import nn
 from torch.multiprocessing import Event, Queue
+import copy
 
 from lerobot.cameras import opencv  # noqa: F401
 
@@ -134,9 +135,12 @@ from lerobot.configs.default import DatasetConfig
 @hydra.main(config_path="./cfg", config_name="config", version_base=None) 
 def actor_cli(env_cfg):
     if "ur" in env_cfg.robot_config.robot_type:
-        lerobot_config_path = "../../train_config_silri_ur.json"
+        lerobot_config_path = "../../cfg/train_config_silri_ur.json"
     elif "franka" in env_cfg.robot_config.robot_type:
-        lerobot_config_path = "../../train_config_silri_franka.json"
+        lerobot_config_path = "../../cfg/train_config_silri_franka.json"
+    
+    elif "tienkung" in env_cfg.robot_config.robot_type:
+        lerobot_config_path = "../../cfg/train_config_silri_tienkung.json"
     else:
         raise ValueError(f"Invalid robot type: {env_cfg.robot_type}")
     with draccus.config_type("json"):
@@ -144,7 +148,7 @@ def actor_cli(env_cfg):
             cfg = draccus.parse(TrainRLServerPipelineConfig, lerobot_config_path, args=[f"--policy.type={env_cfg.policy_type}", f"--policy.num_discrete_actions=2"])
         else:
             cfg = draccus.parse(TrainRLServerPipelineConfig, lerobot_config_path, args=[f"--policy.type={env_cfg.policy_type}"])
-    
+
     if env_cfg.dataset is not None:
         dataset_obj = OmegaConf.to_object(env_cfg.dataset)
         cfg.dataset = DatasetConfig(**dataset_obj)
@@ -351,8 +355,10 @@ def act_with_policy(
             return
 
         with policy_timer:
-            if env_cfg.fix_gripper:
-                action = np.zeros(policy.continuous_action_dim)
+            # 双臂（left_ee_pos+left_gripper + right_ee_pos+right_gripper）
+            if env_cfg.robot_config.dual_arm:
+                action = np.zeros(policy.continuous_action_dim+2)
+            # 单臂（ee_pos+gripper）
             else:
                 action = np.zeros(policy.continuous_action_dim+1)
 
@@ -361,8 +367,19 @@ def act_with_policy(
             policy_action, action_info = policy.select_action(batch=policy_obs)
 
             policy_action = policy_action.squeeze(0).cpu().detach().numpy()
-            action[0:policy_action.shape[0]] = policy_action
 
+
+            if env_cfg.fix_gripper: 
+                if env_cfg.robot_config.dual_arm:
+                    # 双臂无夹爪时，分别赋值left_ee_pos和right_ee_pos
+                    action[0:policy.continuous_action_dim//2] = policy_action[0:policy.continuous_action_dim//2]
+                    action[policy.continuous_action_dim//2+1:-1] = policy_action[policy.continuous_action_dim//2:] 
+                else:
+                    # 单臂无夹爪时，只赋值ee_pos
+                    action[0:policy_action.shape[0]] = policy_action
+            else:
+                # 有夹爪直接赋值
+                action = copy.deepcopy(policy_action)
 
             if env_cfg.freeze_actor:
                 action = 0 * action

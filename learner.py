@@ -120,11 +120,12 @@ new_offline_transition_num = 0
 @hydra.main(config_path="./cfg", config_name="config") 
 def train_cli(env_cfg):
     if env_cfg.robot_config.robot_type == "ur_wrist":
-        env_cfg.lerobot_config_path = "../../../../../train_config_silri_ur.json"
+        env_cfg.lerobot_config_path = "../../../../../cfg/train_config_silri_ur.json"
     elif "franka" in env_cfg.robot_config.robot_type:
-        env_cfg.lerobot_config_path = "../../../../../train_config_silri_franka.json"
-    elif env_cfg.robot_config.robot_type == "sim" :
-        env_cfg.lerobot_config_path = "../../../../../train_config_silri_sim.json"
+        env_cfg.lerobot_config_path = "../../../../../cfg/train_config_silri_franka.json"
+    
+    elif "tienkung" in env_cfg.robot_config.robot_type:
+        env_cfg.lerobot_config_path = "../../../../../cfg/train_config_silri_tienkung.json"
     else:
         raise ValueError(f"Invalid robot type: {env_cfg.robot_type}")
     
@@ -151,7 +152,12 @@ def train_cli(env_cfg):
             exit(-1)
 
 
-    cfg.output_dir = os.getcwd()
+    if env_cfg.resume_model:
+        cfg.resume = True
+        cfg.output_dir = Path(env_cfg.resume_path)
+    else:
+        cfg.resume = False
+        cfg.output_dir = os.getcwd()
     cfg.job_name = env_cfg.task_name
     cfg.validate(config_path)
     cfg.wandb.name = env_cfg.task_name
@@ -421,7 +427,7 @@ def add_actor_information_and_train(
 
 
     # =================== offline training ===================
-    if "silri" in cfg.policy.type:
+    if "silri" in cfg.policy.type and not cfg.resume:
         offline_training(
             cfg=cfg,
             policy=policy,
@@ -542,7 +548,6 @@ def add_actor_information_and_train(
 
             # weight = batch["complementary_info"]["weight"]
 
-            assert 'discrete_penalty' in batch["complementary_info"].keys(), "discrete_penalty not in batch['complementary_info']"
 
             check_nan_in_transition(observations=observations, actions=actions, next_state=next_observations)
 
@@ -564,7 +569,7 @@ def add_actor_information_and_train(
             }
 
             """
-                hgdagger模仿学习不需要critic???
+                hgdagger模仿学习不需要critic
             """
             if "hgdagger" not in cfg.policy.type:
                 # Use the forward method for critic loss
@@ -582,7 +587,7 @@ def add_actor_information_and_train(
 
             # Discrete critic optimization (if available)
             """
-                hgdagger和lag夹爪部分模仿学习不需要discrete critic
+                hgdagger和silri夹爪部分模仿学习不需要discrete critic
             """
             if policy.config.num_discrete_actions is not None and "hgdagger" not in cfg.policy.type and "silri" not in cfg.policy.type:
                 discrete_critic_output = policy.forward(forward_batch, model="discrete_critic")
@@ -648,7 +653,7 @@ def add_actor_information_and_train(
         }
 
         """
-            hgdagger模仿学习不需要critic???
+            hgdagger模仿学习不需要critic
         """
         if "hgdagger" not in cfg.policy.type:
             critic_output = policy.forward(forward_batch, model="critic")
@@ -677,7 +682,7 @@ def add_actor_information_and_train(
 
         # Discrete critic optimization (if available)
         """
-            hgdagger和silri部分模仿学习不需要discrete critic
+            hgdagger和silri夹爪部分模仿学习不需要discrete critic
         """
         if policy.config.num_discrete_actions is not None and "hgdagger" not in cfg.policy.type and "silri" not in cfg.policy.type:
             discrete_critic_output = policy.forward(forward_batch, model="discrete_critic")
@@ -692,8 +697,10 @@ def add_actor_information_and_train(
             # Add discrete critic info to training info
             training_infos["loss_discrete_critic"] = loss_discrete_critic.item()
             training_infos["discrete_critic_grad_norm"] = discrete_critic_grad_norm
-            training_infos["loss_q"] = discrete_critic_output["loss_q"].item()
-            training_infos["loss_bc"] = discrete_critic_output["loss_bc"].item()
+            training_infos["loss_q"] = discrete_critic_output.get("loss_q", 0.0)
+            training_infos["loss_bc"] = discrete_critic_output.get("loss_bc", 0.0)
+
+
 
         # Actor and temperature optimization (at specified frequency)
         if optimization_step % policy_update_freq == 0:
@@ -710,10 +717,10 @@ def add_actor_information_and_train(
 
                 # Add actor info to training info
                 training_infos["loss_actor"] = loss_actor.item()
-                training_infos["bc_loss"] = actor_output.get("bc_loss", torch.tensor(0.0)).item()
-                training_infos["min_q_preds"] = actor_output.get("min_q_preds", torch.tensor(0.0)).item()
+                training_infos["bc_loss"] = actor_output.get("bc_loss", 0.0)
+                training_infos["min_q_preds"] = actor_output.get("min_q_preds", 0.0)
                 training_infos["actor_grad_norm"] = actor_grad_norm
-                training_infos["allow_d_actor"] = actor_output.get("allow_d", 0)
+                training_infos["allow_d_actor"] = actor_output.get("allow_d", 0.0)
                 
 
                 if "silri" in cfg.policy.type:
@@ -732,9 +739,9 @@ def add_actor_information_and_train(
                     optimizers["lagrange"].step()
                     training_infos["loss_lagrange"] = loss_lagrange.item()
                     training_infos["lagrange_grad_norm"] = lagrange_grad_norm
-                    training_infos["mean_d"] = lagrange_output["mean_d"]
-                    training_infos["allow_d"] = lagrange_output["allow_d"]
-                    training_infos["cost_dev"] = lagrange_output["cost_dev"]
+                    training_infos["mean_d"] = lagrange_output.get("mean_d", 0.0)
+                    training_infos["allow_d"] = lagrange_output.get("allow_d", 0.0)
+                    training_infos["cost_dev"] = lagrange_output.get("cost_dev", 0.0)
             
                 policy.update_target_networks()
 
@@ -976,7 +983,7 @@ def offline_training(cfg: TrainRLServerPipelineConfig, policy: nn.Module, optimi
         training_infos = {}
         # Add actor info to training info
         training_infos["loss_expert"] = loss_expert.item()
-        training_infos["allow_d"] = expert_output.get("allow_d", 0)
+        training_infos["allow_d"] = expert_output.get("allow_d", 0.0)
         training_infos["loss_actor_bc"] = loss_actor_bc.item()
 
 
@@ -1039,7 +1046,7 @@ def expert_training(offline_replay_buffer, optimizers, policy, clip_grad_norm_va
         }
         expert_output= policy.forward(forward_batch, model="expert")
         loss_expert = expert_output["loss_expert"] 
-        allow_distance = expert_output.get("allow_d", 0)
+        allow_distance = expert_output.get("allow_d", 0.0)
         optimizers["expert"].zero_grad()
         loss_expert.backward()
         expert_grad_norm = torch.nn.utils.clip_grad_norm_(
@@ -1093,16 +1100,17 @@ def save_training_checkpoint(
     policy.save_pretrained(model_dir)
     print('save model under', model_dir)
 
-    # # （注释掉的备用逻辑）保存完整检查点（含优化器、调度器状态）
-    # # 若需恢复训练时继续使用之前的优化器状态，需取消注释此段
-    # save_checkpoint(
-    #     checkpoint_dir=checkpoint_dir,
-    #     step=optimization_step,
-    #     cfg=cfg,
-    #     policy=policy,
-    #     optimizer=optimizers,
-    #     scheduler=None,  # 本训练流程未使用学习率调度器，设为None
-    # )
+    if "hgdagger" not in cfg.policy.type:
+        # （注释掉的备用逻辑）保存完整检查点（含优化器、调度器状态）
+        # 若需恢复训练时继续使用之前的优化器状态，需取消注释此段
+        save_checkpoint(
+            checkpoint_dir=checkpoint_dir,
+            step=optimization_step,
+            cfg=cfg,
+            policy=policy,
+            optimizer=optimizers,
+            scheduler=None,  # 本训练流程未使用学习率调度器，设为None
+        )
 
     # 3. 保存训练状态（优化步数+交互步数）
     training_state_dir = os.path.join(checkpoint_dir, TRAINING_STATE_DIR)

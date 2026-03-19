@@ -1,22 +1,25 @@
 robot_config:
-  robot_type: franka
+  robot_type: tienkung
+  gripper_identify: ["left", "right"]
   hz: 10
   joint_dim: 7
   gripper_dim: 1
-  dual_arm: false
-  use_cmd_pose: false
-  
+  dual_arm: true
+  use_cmd_pose: true
+
   image_crop: {
-      "right": [[0, 480], [225, -50]]
-  }
+      # "top": [[320,720],[0,1280]]
+      "top": [[0,880],[150,1130]]
+    }
   action_scale: [0.02, 0.06, 1.0]
-  image_keys: ["right", "wrist"]
+  image_keys: ["top","left","right"]
 
   proprio_keys: ["tcp_pose", "gripper_pose"]
 
   image_resize:
+    "top": [128, 128, 3]
     "right": [128, 128, 3]
-    "wrist": [128, 128, 3]
+    "left": [128, 128, 3]
 
   bgr2rgb: true
 
@@ -29,7 +32,7 @@ robot_config:
   random_reset: true
   random_xy_range: 0.02
   random_rz_range: 0.05
-  gripper_sleep: 0.05
+  gripper_sleep: 0.6
   max_episode_length: ${max_episode_length}
   control_mode: ${control_mode}
   classifier_cfg: ${classifier_cfg}
@@ -37,8 +40,3 @@ robot_config:
   close_gripper: ${close_gripper}
   fix_gripper: ${fix_gripper}
   ego_mode: ${ego_mode}
-
-
-
-
-

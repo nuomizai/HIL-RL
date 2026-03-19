@@ -8,7 +8,7 @@
     "steps": 100000,
     "log_freq": 500,
     "save_checkpoint": true,
-    "save_freq": 1000,
+    "save_freq": 1000 ,
     "wandb": {
         "enable": true,
         "project": "so100_real",
@@ -26,7 +26,7 @@
             "VISUAL": "MEAN_STD"
         },
         "input_features": {
-            "observation.images.right": {
+            "observation.images.top": {
                 "type": "VISUAL",
                 "shape": [
                     3,
@@ -34,7 +34,15 @@
                     128
                 ]
             },
-            "observation.images.wrist": {
+            "observation.images.left": {
+                "type": "VISUAL",
+                "shape": [
+                    3,
+                    128,
+                    128
+                ]
+            },
+            "observation.images.right": {
                 "type": "VISUAL",
                 "shape": [
                     3,
@@ -45,14 +53,14 @@
             "observation.state": {
                 "type": "STATE",
                 "shape": [
-                    14
+                    16
                 ]
             }
         },
         "device": "cuda",
         "use_amp": false,
         "dataset_stats": {
-            "observation.images.right": {
+            "observation.images.top": {
                 "mean": [
                     0.485,
                     0.456,
@@ -64,7 +72,19 @@
                     0.225
                 ]
             },
-            "observation.images.wrist": {
+            "observation.images.left": {
+                "mean": [
+                    0.485,
+                    0.456,
+                    0.406
+                ],
+                "std": [
+                    0.229,
+                    0.224,
+                    0.225
+                ]
+            },
+            "observation.images.right": {
                 "mean": [
                     0.485,
                     0.456,
@@ -121,20 +141,20 @@
         },
         "policy_kwargs": {
             "use_tanh_squash": true,
-            "std_min": -5,
-            "std_max": 2,
+            "std_min": 1e-5,
+            "std_max": 10,
             "init_final": 0.05
         },
         "actor_learner_config": {
-            "learner_host": "10.10.247.23",
-            "learner_port": 50051,
+            "learner_host": "127.0.0.1",
+            "learner_port": 50052,
             "policy_parameters_push_frequency": 4
         },
         "concurrency": {
             "actor": "threads",
             "learner": "threads"
         },
-        "use_gripper_penalty": false
+        "use_gripper_penalty": true
     },
 
     "env": {
@@ -216,7 +236,7 @@
         "push_to_hub": true,
         "fps": 10,
         "features": {
-            "observation.images.right": {
+            "observation.images.top": {
                 "type": "VISUAL",
                 "shape": [
                     128,
@@ -224,7 +244,15 @@
                     3
                 ]
             },
-            "observation.images.wrist": {
+            "observation.images.left": {
+                "type": "VISUAL",
+                "shape": [
+                    128,
+                    128,
+                    3
+                ]
+            },
+            "observation.images.right": {
                 "type": "VISUAL",
                 "shape": [
                     128,
@@ -235,19 +263,20 @@
             "observation.state": {
                 "type": "STATE",
                 "shape": [
-                    14
+                    16
                 ]
             },
             "action": {
                 "type": "ACTION",
                 "shape": [
-                    6
+                    12
                 ]
             }
         },
         "features_map": {
+            "observation.images.top": "observation.images.top",
+            "observation.images.left": "observation.images.left",
             "observation.images.right": "observation.images.right",
-            "observation.images.wrist": "observation.images.wrist",
             "observation.state": "observation.state",
             "action": "action"
         }

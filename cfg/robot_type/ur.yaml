@@ -3,6 +3,9 @@ robot_config:
   hz: 10
   joint_dim: 6
   gripper_dim: 1
+  dual_arm: false
+  use_cmd_pose: false
+  
   image_crop: {
       "right": [[0, 720], [300, -50]]
   }
