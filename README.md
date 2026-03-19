@@ -35,6 +35,18 @@ SiLRI: A state-wise Lagrangian RL algorithm for real-world robotic manipulation 
 
 </div>
 
+## Update Logs
+### v1.0
+#### Improvements
+- Adapt to the control logic of single-arm/dual-arm robots
+- Optimize code format and comments to improve maintainability
+
+#### Fixes
+- Fixed the dimension error of `observation.state` in JSON files
+- Implemented the resume function to support recovery after training interruption
+
+---
+
 ## TODO List
 
 * [✅] **Real World:** Release the 3D model and corresponding shopping list for the homogeneous UR arm.
@@ -218,17 +230,7 @@ If you find this project useful in your research, please consider cite:
 We summarize common questions in the `docs/` directory. If you encounter an issue not covered there, please open a GitHub issue or contact `linda.chao.007@gmail.com` directly. We welcome feedback and contributions.
 
 
-## Update Logs
-### v1.0
-#### Improvements
-- Adapt to the control logic of single-arm/dual-arm robots
-- Optimize code format and comments to improve maintainability
 
-#### Fixes
-- Fixed the dimension error of `observation.state` in JSON files
-- Implemented the resume function to support recovery after training interruption
-
----
 
 ### v0.0
 #### Core Features
