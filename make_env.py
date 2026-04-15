@@ -27,15 +27,33 @@ def make_env(config, fake_env, use_human_intervention, classifier=False, use_gri
             env = ConvertObservationWrapper(env)
         else:
             from rl_envs.base_env import BaseEnv
-            from rl_envs.tienkung_env import TienkungEnv
             from rl_envs.wrappers import HumanIntervention, SERLObsWrapper, AugmentedObservationWrapper
             from rl_envs.reward_wrapper import MultiCameraBinaryRewardClassifierWrapper, GripperPenaltyWrapper
 
-            # env = BaseEnv(config=config.robot_config, fake_env=fake_env)
-            env = TienkungEnv(config=config.robot_config, fake_env=fake_env)
+            env = BaseEnv(config=config.robot_config, fake_env=fake_env)
             
             if not fake_env and use_human_intervention:
-                env = HumanIntervention(env)
+                intervention_backend = getattr(config, "intervention_backend", "xtele")
+                if intervention_backend == "spacemouse":
+                    assert config.robot_config.dual_arm == False, "spacemouse intervention is not supported for dual arm robots"
+                    spacemouse_enable_gripper = bool(getattr(config, "spacemouse_enable_gripper", True))
+                    if getattr(config.robot_config, "fix_gripper", False):
+                        # Keep action format consistent, but disable manual gripper toggles when gripper is fixed.
+                        spacemouse_enable_gripper = False
+                    from rl_envs.wrappers import SpaceMouseIntervention
+                    env = SpaceMouseIntervention(
+                        env,
+                        deadzone=getattr(config, "spacemouse_deadzone", 1e-3),
+                        axis_deadzone=getattr(config, "spacemouse_axis_deadzone", None),
+                        enable_gripper=spacemouse_enable_gripper,
+                        translation_scale=getattr(config, "spacemouse_translation_scale", 1.0),
+                        rotation_scale=getattr(config, "spacemouse_rotation_scale", 1.0),
+                        axis_signs=getattr(config, "spacemouse_axis_signs", [1, 1, 1, 1, 1, 1]),
+                    )
+                elif intervention_backend == "xtele":
+                    env = HumanIntervention(env)
+                else:
+                    raise ValueError(f"Unsupported intervention backend: {intervention_backend}")
             
             env = AugmentedObservationWrapper(env)
             env = SERLObsWrapper(env,proprio_keys=config.robot_config.proprio_keys, use_force=config.use_force)

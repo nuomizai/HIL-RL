@@ -35,7 +35,25 @@ SiLRI: A state-wise Lagrangian RL algorithm for real-world robotic manipulation 
 
 </div>
 
+Here is a clearer and more concise version:
+
 ## Update Logs
+
+### v1.0.1
+
+#### Improvements
+
+* Added SpaceMouse intervention support. Set `intervention_backend` to `spacemouse` to enable it. The default backend remains `xtele`. (Contributor: [@lihanlian](https://github.com/lihanlian))
+
+#### Fixes
+
+* Fixed an error caused by updates to the remote `helper2424/resnet10` repository:
+
+```python
+ValueError: Unrecognized configuration class <class 'transformers_modules.helper2424.resnet10.4a8c1df3969cf6e51106afe0966a2655da6674ec.configuration_resnet.ResNet10Config'> for this kind of AutoModel: AutoModel.
+```
+
+
 ### v1.0
 #### Improvements
 - Adapt to the control logic of single-arm/dual-arm robots
@@ -45,6 +63,9 @@ SiLRI: A state-wise Lagrangian RL algorithm for real-world robotic manipulation 
 - Fixed the dimension error of `observation.state` in JSON files
 - Implemented the resume function to support recovery after training interruption
 
+### v0.0
+#### Core Features
+- Implemented the control framework for single-arm robots
 ---
 
 ## TODO List
@@ -232,9 +253,7 @@ We summarize common questions in the `docs/` directory. If you encounter an issu
 
 
 
-### v0.0
-#### Core Features
-- Implemented the control framework for single-arm robots
+
 
 ## Acknowledgement
 HIL-RL is built with reference to the code of the following projects: [Lerobot](https://github.com/huggingface/lerobot), [HIL-SERL](https://github.com/rail-berkeley/hil-serl). Thanks for their awesome work!
