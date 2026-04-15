@@ -16,6 +16,14 @@ ego_mode: false
 use_force: false
 load_classifier: true
 
+# add config for spacemouse intervention
+intervention_backend: xtele # xtele or spacemouse
+spacemouse_deadzone: 0.2
+spacemouse_axis_deadzone: 0.2
+spacemouse_enable_gripper: true
+spacemouse_translation_scale: 1
+spacemouse_rotation_scale: 1
+spacemouse_axis_signs: [1.0, -1.0, -1.0, 1.0, -1.0, -1.0]
 
 
 hydra:
