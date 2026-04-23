@@ -35,8 +35,6 @@ SiLRI: A state-wise Lagrangian RL algorithm for real-world robotic manipulation 
 
 </div>
 
-Here is a clearer and more concise version:
-
 ## Update Logs
 
 ### v1.0.1
